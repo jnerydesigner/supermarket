@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+interface PropsStylesCard {
+  icon: boolean;
+}
+
 export const Container = styled.div`
   height: 180px;
   width: 150px;
@@ -33,13 +37,14 @@ export const ImgBox = styled.div`
   }
 `;
 
-export const BoxPrice = styled.div`
+export const BoxPrice = styled.div<PropsStylesCard>`
   height: 50px;
   width: 100%;
   display: flex;
   padding-left: 5px;
   padding-right: 5px;
-  justify-content: space-between;
+  justify-content: ${(props) =>
+    props.icon === true ? "space-between" : "center"};
   align-items: center;
   flex-direction: row;
   button {

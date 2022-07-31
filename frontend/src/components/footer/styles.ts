@@ -7,5 +7,5 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   border-top: 1px solid #fcfcfc;
-  color: #fcfcfc;
+  color: #824ed6;
 `;

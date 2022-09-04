@@ -1,4 +1,5 @@
 import { Card } from "../card";
+import { Ticket } from "../ticket";
 import {
   Container,
   CollumnCart,
@@ -35,7 +36,7 @@ export function Main() {
         </BoxCard>
       </CollumnCart>
       <CollumnTicket>
-        <h1>coluna 1</h1>
+        <Ticket />
       </CollumnTicket>
     </Container>
   );

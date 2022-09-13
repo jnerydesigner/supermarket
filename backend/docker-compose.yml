@@ -1,4 +1,11 @@
-version: '3.7'
+version: '3.4'
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
 
 services:
   api:
@@ -9,15 +16,16 @@ services:
     volumes:
       - .:/usr/node/app
     command: npm run start:dev
-    env_file: .env
+    hostname: app_supermarket
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_HOST}/${POSTGRES_DB}?schema=public
+      - HOST_DATABASE=192.168.55.1
     ports:
       - "3000:3000"
     depends_on:
       - postgres
     networks:
-      - postgres
+      default:
+        ipv4_address: 192.168.55.3
 
   postgres:
     container_name: postgres_container
@@ -32,15 +40,9 @@ services:
       - postgres_vol:/data/postgres
     ports:
       - "5444:5432"
-    networks:
-      - postgres
     restart: unless-stopped
 
 volumes:
   postgres_vol:
     driver: local
 
-
-networks:
-  postgres:
-    driver: bridge

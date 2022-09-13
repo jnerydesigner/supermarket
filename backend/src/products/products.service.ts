@@ -1,65 +1,66 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { v4 as uuidv4 } from 'uuid';
-import { PrismaService } from 'src/database/PrismaService';
-import { Prisma } from '@prisma/client';
-import { Decimal } from '@prisma/client/runtime';
-
+import { Products } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prisma: PrismaService){}
+  constructor(
+    @InjectRepository(Products)
+    private productsRepository: Repository<Products>,
+  ) {}
 
+  async create(data: CreateProductDto): Promise<CreateProductDto> {
+    const { productName } = data;
 
-  async create(data: CreateProductDto) {
-    const productsExists = await this.prisma.products.findFirst({
-      where:{
-        productName: data.productName
-      }
-    })
+    const isProductExists = await this.productsRepository.findOne({
+      where: {
+        productName,
+      },
+    });
 
-    if(productsExists) throw new Error("Products Exists");
-    const product = await this.prisma.products.create({data})
-    return product;
+    console.log(isProductExists);
+
+    if (isProductExists) {
+      throw new Error('O Produto já existe');
+    }
+
+    const product = this.productsRepository.create(data);
+
+    return await this.productsRepository.save(product);
   }
 
-  async findAll(){
-    return this.prisma.products.findMany();
+  async findAll(): Promise<CreateProductDto[]> {
+    return await this.productsRepository.find();
   }
 
-  async findOne(id: string) {
-    return await this.prisma.products.findFirst({
-      where:{
-        id
-      }
-    })
+  async findOne(id: string): Promise<CreateProductDto> {
+    return await this.productsRepository.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
   async update(id: string, data: UpdateProductDto) {
-    const productExists = await this.prisma.products.findFirst({
-      where:{
-        id
-      }
-    })
-
-    if(productExists){
-      return this.prisma.products.update({
-        where: {
-          id
-        },
-        data
-      });
-    }
-
-    return false    
+    await this.productsRepository.update(id, data);
+    const product = await this.productsRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    return product;
   }
 
-  remove(id: string) {  
-    return this.prisma.products.delete({
-      where:{
-        id
-      }
+  async remove(id: string) {
+    const product = await this.productsRepository.findOne({
+      where: {
+        id,
+      },
     });
+    await this.productsRepository.delete(id);
+    return `Produto ${product.productName} excluido com sucesso`;
   }
 }

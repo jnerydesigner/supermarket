@@ -1,6 +1,7 @@
 export class CreateProductDto {
-    id?: string
-    productName: string
-    productPrice: number
-    createdAt?: Date | string
+  id?: string;
+  productName: string;
+  productPrice: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }

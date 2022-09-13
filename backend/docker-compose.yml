@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  api:
+    container_name: api_supermarket
+    build: .
+    volumes:
+      - .:/home/node/app
+    entrypoint: sh -c "npm install && npm run start:dev"
+    hostname: app_supermarket
+    environment:
+      - HOST_DATABASE=172.20.0.1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    container_name: db_supermarket
+    image: postgres
+    hostname: database_supermarket
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: admin
+      POSTGRES_DB: supermarket
+    volumes:
+      - postgres_vol:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+
+
+volumes:
+  postgres_vol:

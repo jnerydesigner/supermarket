@@ -1,46 +1,37 @@
-version: '3.7'
+version: '3.4'
 
 services:
   api:
     container_name: api_supermarket
-    build:
-      dockerfile: Dockerfile
-      context: .
+    build: .
     volumes:
-      - .:/usr/node/app
-    command: npm run start:dev
-    env_file: .env
+      - .:/home/node/app
+    entrypoint: sh -c "npm install && npm run start:dev"
+    hostname: app_supermarket
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_HOST}/${POSTGRES_DB}?schema=public
+      - HOST_DATABASE=172.20.0.1
     ports:
       - "3000:3000"
     depends_on:
       - postgres
-    networks:
+    links:
       - postgres
 
   postgres:
-    container_name: postgres_container
+    container_name: db_supermarket
     image: postgres
-    hostname: db_supermarket
+    hostname: database_supermarket
     environment:
       POSTGRES_PASSWORD: root
       POSTGRES_USER: admin
       POSTGRES_DB: supermarket
-      PGDATA: /data/postgres
     volumes:
-      - postgres_vol:/data/postgres
+      - postgres_vol:/var/lib/postgresql/data
     ports:
-      - "5444:5432"
-    networks:
-      - postgres
+      - "5432:5432"
     restart: unless-stopped
+
+
 
 volumes:
   postgres_vol:
-    driver: local
-
-
-networks:
-  postgres:
-    driver: bridge

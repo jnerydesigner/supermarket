@@ -4,4 +4,5 @@ export class CreateProductDto {
   productPrice: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  productImage?: string;
 }

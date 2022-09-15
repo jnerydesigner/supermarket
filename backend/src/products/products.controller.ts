@@ -12,32 +12,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import * as path from 'path';
 import { join } from 'path';
 import { Observable, of } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
+import { StorageMulter } from '../infrastructure/services/storage.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { IImage } from './image.interface';
 import { ProductsService } from './products.service';
-
-function utf8_to_b64(encodeStr: string) {
-  return btoa(unescape(encodeURIComponent(encodeStr)));
-}
-
-export const storage = {
-  storage: diskStorage({
-    destination: './uploads/supermarket-images',
-    filename: (req, file, cb) => {
-      const strNewDate = new Date();
-      let filename: string = utf8_to_b64(strNewDate.toDateString());
-      filename = filename + '-' + uuidv4();
-      const extension: string = path.parse(file.originalname).ext;
-      cb(null, `${filename}${extension}`);
-    },
-  }),
-};
 
 @Controller('products')
 export class ProductsController {
@@ -69,7 +50,7 @@ export class ProductsController {
   }
 
   @Patch('upload/:id')
-  @UseInterceptors(FileInterceptor('file', storage))
+  @UseInterceptors(FileInterceptor('file', new StorageMulter().getConfig()))
   uploadFile(
     @UploadedFile() file: IImage,
     @Request() req,

@@ -2,12 +2,12 @@ version: '3.4'
 
 services:
   api:
-    container_name: api_supermarket
+    container_name: api_market
     build: .
     volumes:
       - .:/home/node/app
     entrypoint: sh -c "npm install && npm run start:dev"
-    hostname: app_market
+    hostname: app_supermarket
     environment:
       - HOST_DATABASE=172.25.0.1
     ports:

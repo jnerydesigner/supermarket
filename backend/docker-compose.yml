@@ -7,9 +7,9 @@ services:
     volumes:
       - .:/home/node/app
     entrypoint: sh -c "npm install && npm run start:dev"
-    hostname: app_supermarket
+    hostname: app_market
     environment:
-      - HOST_DATABASE=172.20.0.1
+      - HOST_DATABASE=172.25.0.1
     ports:
       - "3000:3000"
     depends_on:
@@ -18,7 +18,7 @@ services:
       - postgres
 
   postgres:
-    container_name: db_supermarket
+    container_name: db_market
     image: postgres
     hostname: database_supermarket
     environment:
@@ -28,7 +28,7 @@ services:
     volumes:
       - postgres_vol:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5434:5432"
     restart: unless-stopped
 
 

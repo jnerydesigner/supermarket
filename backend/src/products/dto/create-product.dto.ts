@@ -3,4 +3,6 @@ export class CreateProductDto {
   productName: string;
   productPrice: number;
   createdAt?: Date | string;
+  updatedAt?: Date | string;
+  productImage?: string;
 }

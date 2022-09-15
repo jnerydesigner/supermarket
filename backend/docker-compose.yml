@@ -2,16 +2,14 @@ version: '3.4'
 
 services:
   api:
-    container_name: api_supermarket
-    build:
-      dockerfile: Dockerfile
-      context: .
+    container_name: api_market
+    build: .
     volumes:
       - .:/home/node/app
-    command: npm run start:dev
+    entrypoint: sh -c "npm install && npm run start:dev"
     hostname: app_supermarket
     environment:
-      - HOST_DATABASE=172.20.0.1
+      - HOST_DATABASE=172.25.0.1
     ports:
       - "3000:3000"
     depends_on:
@@ -19,9 +17,8 @@ services:
     links:
       - postgres
 
-
   postgres:
-    container_name: db_supermarket
+    container_name: db_market
     image: postgres
     hostname: database_supermarket
     environment:
@@ -31,11 +28,10 @@ services:
     volumes:
       - postgres_vol:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5434:5432"
     restart: unless-stopped
 
 
 
 volumes:
   postgres_vol:
-

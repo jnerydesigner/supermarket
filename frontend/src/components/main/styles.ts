@@ -31,10 +31,10 @@ export const BoxCard = styled.div`
   width: 100%;
   height: 85%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 5px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
   padding: 5px;
-  overflow: hidden;
+  overflow: scroll;
 `;
 export const CollumnCart = styled.div`
   h2 {

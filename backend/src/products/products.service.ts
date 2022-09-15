@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as fs from 'fs';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -61,10 +62,63 @@ export class ProductsService {
         id,
       },
     });
+    if (product.productImage !== '' || product.productImage !== null) {
+      const linkFile = `${process.cwd()}/uploads/market-images/${
+        product.productImage
+      }`;
+
+      fs.unlink(linkFile, (erro) => {
+        if (erro) return erro;
+        console.log('path/file.txt was deleted');
+      });
+    }
 
     await this.productRepository.delete(id);
     return {
       message: `Produto ${product.productName} removido com sucesso`,
     };
+  }
+
+  async updateProductImage(id: string, filename: string) {
+    let product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (product.productImage === '' || product.productImage === null) {
+      await this.productRepository.update(id, {
+        productImage: filename,
+      });
+    } else {
+      const linkFile = `${process.cwd()}/uploads/market-images/${
+        product.productImage
+      }`;
+
+      fs.unlink(linkFile, (erro) => {
+        if (erro) return erro;
+        console.log('path/file.txt was deleted');
+      });
+
+      await this.productRepository.update(id, {
+        productImage: filename,
+      });
+    }
+    product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    return product;
+  }
+
+  async imageSearch(filename: string) {
+    let product = await this.productRepository.findOne({
+      where: {
+        productImage: filename,
+      },
+    });
+
+    return product.productImage;
   }
 }

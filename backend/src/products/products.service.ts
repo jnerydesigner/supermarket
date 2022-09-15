@@ -56,39 +56,22 @@ export class ProductsService {
     return product;
   }
 
-  async updateImage(id: string, filename: string) {
-    let product = await this.productRepository.findOne({
-      where: {
-        id,
-      },
-    });
-
-    const linkFile =
-      process.cwd() + '/uploads/supermarket-images/' + product.productImage;
-
-    fs.unlink(linkFile, (error) => {
-      if (error) return console.log(error);
-      console.log('file deleted successfully');
-    });
-
-    await this.productRepository.update(id, {
-      productImage: filename,
-    });
-
-    product = await this.productRepository.findOne({
-      where: {
-        id,
-      },
-    });
-    return product;
-  }
-
   async remove(id: string) {
     const product = await this.productRepository.findOne({
       where: {
         id,
       },
     });
+    if (product.productImage !== '' || product.productImage !== null) {
+      const linkFile = `${process.cwd()}/uploads/market-images/${
+        product.productImage
+      }`;
+
+      fs.unlink(linkFile, (erro) => {
+        if (erro) return erro;
+        console.log('path/file.txt was deleted');
+      });
+    }
 
     await this.productRepository.delete(id);
     return {
@@ -96,8 +79,41 @@ export class ProductsService {
     };
   }
 
+  async updateProductImage(id: string, filename: string) {
+    let product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    if (product.productImage === '' || product.productImage === null) {
+      await this.productRepository.update(id, {
+        productImage: filename,
+      });
+    } else {
+      const linkFile = `${process.cwd()}/uploads/market-images/${
+        product.productImage
+      }`;
+
+      fs.unlink(linkFile, (erro) => {
+        if (erro) return erro;
+        console.log('path/file.txt was deleted');
+      });
+
+      await this.productRepository.update(id, {
+        productImage: filename,
+      });
+    }
+    product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    return product;
+  }
+
   async imageSearch(filename: string) {
-    const product = await this.productRepository.findOne({
+    let product = await this.productRepository.findOne({
       where: {
         productImage: filename,
       },

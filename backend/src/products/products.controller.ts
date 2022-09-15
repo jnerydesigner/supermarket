@@ -14,10 +14,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { join } from 'path';
 import { Observable, of } from 'rxjs';
-import { StorageMulter } from '../infrastructure/services/storage.service';
+import { Storage } from '../infrastructure/services/storage.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { IImage } from './image.interface';
+import { IImage } from './interface/image.interface';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -50,24 +50,23 @@ export class ProductsController {
   }
 
   @Patch('upload/:id')
-  @UseInterceptors(FileInterceptor('file', new StorageMulter().getConfig()))
+  @UseInterceptors(FileInterceptor('file', new Storage().getConfig()))
   uploadFile(
-    @UploadedFile() file: IImage,
+    @UploadedFile('file') file: IImage,
     @Request() req,
     @Param('id') id: string,
   ): Observable<IImage> {
-    this.productsService.updateImage(id, file.filename);
-    console.log(file);
+    this.productsService.updateProductImage(id, file.filename);
     return of(file);
   }
 
   @Get('product/:image')
-  async getImage(@Param('image') imageName: string, @Res() res) {
-    const imagename = await this.productsService.imageSearch(imageName);
+  async getImage(@Param('image') imageName: string, @Res() response) {
+    const imageNameSearch = await this.productsService.imageSearch(imageName);
 
     return of(
-      res.sendFile(
-        join(process.cwd(), 'uploads/supermarket-images/' + imagename),
+      response.sendFile(
+        join(process.cwd(), 'uploads/market-images/' + imageNameSearch),
       ),
     );
   }

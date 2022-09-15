@@ -1,30 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import multer, { diskStorage } from 'multer';
+import { diskStorage, Options, StorageEngine } from 'multer';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-@Injectable()
-export class StorageMulter {
-  private storage(): multer.StorageEngine {
+export class Storage {
+  private storage(): StorageEngine {
     return diskStorage({
-      destination: './uploads/supermarket-images',
-      filename: (req, file, cb) => {
-        const strNewDate = new Date();
-        let filename: string = this.utf8_to_b64(strNewDate.toDateString());
-        filename = filename + '-' + uuidv4();
+      destination: './uploads/market-images',
+      filename: (req, file, callback) => {
+        const stringDate = new Date();
+        let filename: string = this.stringToBase64(stringDate.toDateString());
+        filename = `${filename}-${uuidv4()}`;
         const extension: string = path.parse(file.originalname).ext;
-        cb(null, `${filename}${extension}`);
+
+        callback(null, `${filename}${extension}`);
       },
     });
   }
 
-  getConfig(): multer.Options {
+  getConfig(): Options {
     return {
       storage: this.storage(),
     };
   }
 
-  private utf8_to_b64(encodeStr: string) {
-    return btoa(unescape(encodeURIComponent(encodeStr)));
+  private stringToBase64(filename: string) {
+    return btoa(unescape(encodeURIComponent(filename)));
   }
 }
